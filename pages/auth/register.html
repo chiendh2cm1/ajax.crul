@@ -29,22 +29,26 @@
             <p class="login-box-msg">Đăng ký tài khoản mới</p>
 
             <form action="#">
+                <span style="color: red"  id="checked-username"></span>
                 <div class="input-group mb-3">
-                    <input class="form-control" id="username" placeholder="Nhập username" type="text">
+                    <input class="form-control" id="username" placeholder="Nhập username" type="text" onchange="checkUserName()">
+
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-user"></span>
                         </div>
                     </div>
                 </div>
+                <span style="color: red"  id="checked-password"></span>
                 <div class="input-group mb-3">
-                    <input class="form-control" id="password" placeholder="Nhập password" type="password">
+                    <input class="form-control" id="password" placeholder="Nhập password" type="password" onchange="checkPassword()">
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-lock"></span>
                         </div>
                     </div>
                 </div>
+                <span style="color: red"  id="checked-confirm-password"></span>
                 <div class="input-group mb-3">
                     <input class="form-control" id="confirm-password" placeholder="Nhập confirm password"
                            type="password">

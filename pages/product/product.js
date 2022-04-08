@@ -3,7 +3,7 @@ currentUser = JSON.parse(currentUser);// ep chuoi ve doi tuong
 
 function showNameUser(){
     let nameUser = "";
-    nameUser = `<a class="d-block" href="#">${currentUser.username}</a>`
+    nameUser = `<p class="d-block" href="#" style="color: white">Chào ${currentUser.username}</p>`
     $('#name-admin').html(nameUser);
 }
 $(document).ready(function () {
@@ -67,7 +67,7 @@ function findProductByName(page) {
         <td>${products[i].name}</td>
         <td>${products[i].price}</td>
         <td>${products[i].description}</td>
-        <td><img src="http://localhost:8080/image/${products[i].image}"></td>
+        <td><img src="http://localhost:8080/image/${products[i].image}" height="100"></td>
         <td>${products[i].category != null ? products[i].category.name : "-"}</td>
         <td><button class="btn btn-primary" data-target="#create-product" data-toggle="modal"
                                         type="button" onclick="showEditProduct(${products[i].id})"><i class="fa fa-edit"></i></button></td>

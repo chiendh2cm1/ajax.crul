@@ -15,7 +15,7 @@ function login() {
         },
         success: function (currentUser) {
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            location.href = "/C112G1-FE_M4/pages/product/product.html"
+            location.href = "/btvv--ajax/index.html"
         }
     });
 }
