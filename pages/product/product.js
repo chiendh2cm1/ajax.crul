@@ -1,7 +1,22 @@
+let currentUser = localStorage.getItem('currentUser');
+currentUser = JSON.parse(currentUser);// ep chuoi ve doi tuong
+
+function showNameUser(){
+    let nameUser = "";
+    nameUser = `<a class="d-block" href="#">${currentUser.username}</a>`
+    $('#name-admin').html(nameUser);
+}
+$(document).ready(function () {
+    showNameUser();
+})
+
 function getProductByPage(page) {
     $.ajax({
         type: 'GET',
         url: `http://localhost:8080/products?page=${page}`,
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         success: function (data) {
             let content = '';
             let products = data.content;
@@ -40,6 +55,9 @@ function findProductByName(page) {
     $.ajax({
         type: 'GET',
         url: `http://localhost:8080/products?q=${q}&page=${page}`,
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         success: function (data) {
             let content = '';
             let products = data.content;
@@ -88,6 +106,9 @@ function createNewProduct() {
     $.ajax({
         type: 'POST',
         url: 'http://localhost:8080/products',
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         data: product,
         enctype: 'multipart/form-data',
         processData: false,
@@ -102,58 +123,29 @@ function createNewProduct() {
     })
 }
 
-function editProduct(id) {
-    let name = $('#name').val();
-    let price = $('#price').val();
-    let description = $('#description').val();
-    let image = $('#image').val();
-    let category = $('#category').val();
-    let product = {
-        name: name,
-        price: price,
-        description: description,
-        image: image,
-        category: {
-            id: category
-        }
-    }
-    $.ajax({
-        type: 'PUT',
-        url: `http://localhost:8080/products/${id}`,
-        data: JSON.stringify(product),
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        success: function () {
-            getProductByPage();
-            showSuccessMessage('Sửa thành công!');
-        },
-        error: function () {
-            showErrorMessage('Sửa lỗi!');
-        }
-    })
-}
-
 // function editProduct(id) {
 //     let name = $('#name').val();
 //     let price = $('#price').val();
 //     let description = $('#description').val();
-//     let image = $('#image');
+//     let image = $('#image').val();
 //     let category = $('#category').val();
-//     let product = new FormData();
-//     product.append('name', name);
-//     product.append('price', price);
-//     product.append('description', description);
-//     product.append('category', category);
-//     product.append('image', image.prop('files')[0])
+//     let product = {
+//         name: name,
+//         price: price,
+//         description: description,
+//         image: image,
+//         category: {
+//             id: category
+//         }
+//     }
 //     $.ajax({
 //         type: 'PUT',
 //         url: `http://localhost:8080/products/${id}`,
-//         data: product,
-//         enctype: 'multipart/form-data',
-//         processData: false,
-//         contentType: false,
+//         data: JSON.stringify(product),
+//         headers: {
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/json'
+//         },
 //         success: function () {
 //             getProductByPage();
 //             showSuccessMessage('Sửa thành công!');
@@ -163,6 +155,38 @@ function editProduct(id) {
 //         }
 //     })
 // }
+
+function editProduct(id) {
+    let name = $('#name').val();
+    let price = $('#price').val();
+    let description = $('#description').val();
+    let image = $('#image');
+    let category = $('#category').val();
+    let product = new FormData();
+    product.append('name', name);
+    product.append('price', price);
+    product.append('description', description);
+    product.append('category', category);
+    product.append('image', image.prop('files')[0])
+    $.ajax({
+        type: 'POST',
+        url: `http://localhost:8080/products/${id}`,
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
+        data: product,
+        enctype: 'multipart/form-data',
+        processData: false,
+        contentType: false,
+        success: function () {
+            getProductByPage();
+            showSuccessMessage('Sửa thành công!');
+        },
+        error: function () {
+            showErrorMessage('Sửa lỗi!');
+        }
+    })
+}
 
 function showSuccessMessage(message) {
     $(function () {
@@ -200,6 +224,9 @@ function deleteProduct(id) {
     $.ajax({
         type: 'DELETE',
         url: `http://localhost:8080/products/${id}`,
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         success: function () {
             getProductByPage();
             showSuccessMessage('Xóa thành công!');
@@ -223,15 +250,41 @@ function showEditProduct(id) {
                     <button class="btn btn-primary" onclick="editProduct(${id})" type="button" aria-label="Close" class="close" data-dismiss="modal">Cập nhật</button>`;
     $('#create-product-title').html(title);
     $('#create-product-footer').html(footer);
+    $(`#name`).val(null);
+    $(`#price`).val(null);
+    $(`#quantity`).val(null);
+    $(`#description`).val(null);
+    $(`#image`).val(null);
     $.ajax({
         type: 'GET',
         url: `http://localhost:8080/products/${id}`,
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         success: function (product) {
+            $.ajax({
+                type: 'GET',
+                url: 'http://localhost:8080/categories',
+                headers: {
+                    'Authorization': 'Bearer ' + currentUser.token
+                },
+                success: function (categories) {
+                    let content = "";
+                    for (let i = 0; i < categories.length; i++) {
+                        if (categories[i].id === product.category.id) {
+                            content += `<option value="${categories[i].id}" selected>${categories[i].name}</option>`
+                        }else {
+                            content += `<option value="${categories[i].id}">${categories[i].name}</option>`
+                        }
+                    }
+                    $('#category').html(content);
+                }
+            });
             $('#name').val(product.name);
             $('#price').val(product.price);
             $('#description').val(product.description);
-            $('#image').val(product.image);
-            drawCategory(product.category.id);
+            let image = `<img src="http://localhost:8080/image/${product.image}" height="50" alt="image">`
+            $('#image_product').html(image);
         }
     })
 }
@@ -250,22 +303,17 @@ function showCreateProduct() {
     drawCategory();
 }
 
-function drawCategory(id) {
+function drawCategory() {
     $.ajax({
         type: 'GET',
         url: 'http://localhost:8080/categories',
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         success: function (categories) {
-            // let content = `<option>Chọn danh mục</option>`
-            // for (let category of categories) {
-            //     content += `<option value="${category.id}">${category.name}</option>`
-            // }
-            let content = "";
-            for (let i = 0; i < categories.length; i++) {
-                if (id === categories[i].id) {
-                    content += `<option value="${categories[i].id}" selected>${categories[i].name}</option>`
-                } else {
-                    content += `<option value="${categories[i].id}">${categories[i].name}</option>`
-                }
+            let content = `<option>Chọn danh mục</option>`
+            for (let category of categories) {
+                content += `<option value="${category.id}">${category.name}</option>`
             }
             $('#category').html(content);
         }
@@ -276,4 +324,3 @@ function drawCategory(id) {
 $(document).ready(function () {
     getProductByPage();
 })
-

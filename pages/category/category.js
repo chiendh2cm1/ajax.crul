@@ -1,7 +1,13 @@
+let currentUser = localStorage.getItem('currentUser');
+currentUser = JSON.parse(currentUser);// ep chuoi ve doi tuong
+
 function getAllCategory() {
     $.ajax({
         Type: 'GET',
         url: 'http://localhost:8080/categories',
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         success: function (categories) {
             let content = '';
             for (let i = 0; i < categories.length; i++) {
@@ -33,6 +39,9 @@ function showDetail(id) {
     $.ajax({
         type: 'GET',
         url: `http://localhost:8080/categories/view/${id}`,
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         success: function (data) {
             let content = '';
             let products = data.content;
@@ -63,6 +72,7 @@ function createNewCategory() {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + currentUser.token,
         },
         success: function () {
             getAllCategory();
@@ -122,6 +132,9 @@ function showEditCategory(id) {
     $.ajax({
         type: 'GET',
         url: `http://localhost:8080/categories/${id}`,
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         success: function (category) {
             $('#name').val(category.name);
         }
@@ -149,7 +162,8 @@ function editCategory(id) {
         data: JSON.stringify(category),
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + currentUser.token
         },
         success: function () {
             getAllCategory();
@@ -165,6 +179,9 @@ function deleteCategory(id) {
     $.ajax({
         type: 'DELETE',
         url: `http://localhost:8080/categories/${id}`,
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         success: function () {
             getAllCategory();
             showSuccessMessage('Xóa thành công!');
